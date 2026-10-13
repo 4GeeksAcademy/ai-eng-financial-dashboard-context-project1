@@ -21,7 +21,7 @@ Leyenda: ✅ verificada en código · ❌ incorrecta (corregida) · ❓ sin veri
 | A38 | Tests de `financial-utils` con Vitest | ✅ |
 | A41 | `conftest.py` con "fixtures" | ✅ existe · ❌ solo configura `sys.path`, no hay fixtures |
 | A4 | Estructura del backend según `README.md:27-38` | ✅ contenido · ❌ la cita no lo respalda |
-| A39 | Dependencias de test: `pytest`, `pytest-cov`, `httpx` | ❌ `requirements.txt` solo tiene `pytest` |
+| A39 | Dependencias de test: `pytest`, `pytest-cov`, `httpx` | ✅ `requirements.txt` las incluye (primera lectura incorrecta por salida de terminal incompleta; corregida) |
 | A1, A2, A3, A15, A40 | Contenido de `App.tsx`, `financial-utils.ts`, `main.tsx`, `test_routes.py` | ❓ sin verificar |
 
 ## B. Verificaciones ya realizadas
@@ -53,3 +53,4 @@ Leyenda: ✅ verificada en código · ❌ incorrecta (corregida) · ❓ sin veri
 ## D. Hallazgo de ingeniería (para Fase 2)
 
 - El periodo del header está fijo en dos sitios y no refleja el rango de los datos.
+- Corrección (tras el commit de la Fase 1): A39 estaba mal marcada; `cat -A backend/requirements.txt` confirma las seis dependencias. La causa fue una salida de terminal incompleta, no un error del agent.
