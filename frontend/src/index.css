@@ -115,6 +115,24 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  /* a11y skill §Focus visible (2.4.7): keyboard-only focus, never removed */
+  :focus-visible {
+    outline: 2px solid var(--color-ring);
+    outline-offset: 2px;
+  }
+
+  /* a11y skill §Motion (2.3) */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
 }
 
 
@@ -122,4 +140,17 @@ html,
 body,
 #root {
   min-height: 100%;
+}
+
+/* a11y skill §Text alternatives (1.1.1): screen-reader-only content */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }

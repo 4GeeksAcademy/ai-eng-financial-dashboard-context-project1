@@ -49,21 +49,31 @@ function App() {
           <DashboardHeader period="2024 - Full Year" />
 
           {error ? (
-            <div className="rounded-lg border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive-foreground">
+            <div
+              role="alert"
+              lang="es"
+              className="rounded-lg border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive-foreground"
+            >
               {error}
             </div>
           ) : null}
 
-          <section aria-label="Key performance indicators">
+          {/* a11y skill §Live regions (4.1.3) */}
+          <p role="status" aria-live="polite" className="visually-hidden">
+            {loading ? 'Loading financial metrics' : 'Financial metrics loaded'}
+          </p>
+
+          <section aria-busy={loading}>
+            <h2 className="visually-hidden">Key performance indicators</h2>
             <KPIRow metrics={metrics} loading={loading} />
           </section>
 
-          <section
-            aria-label="Financial charts"
-            className="grid grid-cols-1 gap-4 xl:grid-cols-2"
-          >
-            <IncomeOutcomeChart data={monthlyData} loading={loading} />
-            <ProfitPercentChart data={monthlyData} loading={loading} />
+          <section>
+            <h2 className="visually-hidden">Financial charts</h2>
+            <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
+              <IncomeOutcomeChart data={monthlyData} loading={loading} />
+              <ProfitPercentChart data={monthlyData} loading={loading} />
+            </div>
           </section>
         </div>
       </div>
