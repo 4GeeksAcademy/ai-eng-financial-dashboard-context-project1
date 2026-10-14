@@ -94,6 +94,24 @@ it is the only one verifiable with tooling already in this repo. The others need
 Lighthouse, a testing library or an indexable public site; adding any of them
 changes dependencies, which `.agents/rules` §4 forbids.
 
+Follow-up CLI search evidence captured in the Codespace on 2026-10-14:
+
+1. `npx skills find core-web-vitals` returned
+  `addyosmani/web-quality-skills@core-web-vitals` (30.2K installs) in fifth
+  position; first was `coreyhaines31/marketingskills@seo-audit` (227.6K),
+  which is not Core Web Vitals. The returned list was ordered by descending
+  displayed install counts, not treated as a relevance ranking, so the full
+  list was reviewed before confirming the choice by name and scope. It was
+  not the only exact skill-name match: the final entry was
+  `kostja94/marketing-skills@core-web-vitals` (1.1K).
+2. `npx skills find accessibility` returned the exact skill-name match with
+  the most installs,
+  `addyosmani/web-quality-skills@accessibility` (61K installs) in eighth
+  position, behind UI-design and other skills. The choice was justified by
+  name and WCAG scope, not by list position. Both searches only confirmed
+  the community skills already present in `.agents/skills/`; no additional
+  skill was installed from either list.
+
 CLS measured with a `PerformanceObserver` on `layout-shift`, `buffered: true`,
 against the production build served locally:
 
