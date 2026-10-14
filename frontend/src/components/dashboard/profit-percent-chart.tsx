@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
-import { Skeleton } from '@/components/ui/skeleton'
+import { ChartCardSkeleton } from '@/components/dashboard/chart-card-skeleton'
 import { type MonthlyDataPoint } from '@/lib/financial-types'
 import {
   LineChart,
@@ -59,17 +59,7 @@ function chartSummary(data: MonthlyDataPoint[]) {
 
 export function ProfitPercentChart({ data, loading }: ProfitPercentChartProps) {
   if (loading) {
-    return (
-      <Card className="border-border/60">
-        <CardHeader className="pb-4">
-          <Skeleton className="h-5 w-52" />
-          <Skeleton className="h-3 w-64 mt-1" />
-        </CardHeader>
-        <CardContent>
-          <Skeleton className="h-[280px] w-full rounded-lg" />
-        </CardContent>
-      </Card>
-    )
+    return <ChartCardSkeleton />
   }
 
   const hasData = data.some((d) => d.profitPercent !== 0)

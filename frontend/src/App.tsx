@@ -1,14 +1,27 @@
-import { useEffect, useState } from "react";
+import { Suspense, lazy, useEffect, useState } from "react";
 import { DashboardHeader } from "@/components/dashboard/dashboard-header";
 import { KPIRow } from "@/components/dashboard/kpi-row";
-import { IncomeOutcomeChart } from "@/components/dashboard/income-outcome-chart";
-import { ProfitPercentChart } from "@/components/dashboard/profit-percent-chart";
+import { ChartCardSkeleton } from "@/components/dashboard/chart-card-skeleton";
 import {
   type FinancialMovement,
   type KPIMetrics,
   type MonthlyDataPoint,
 } from "@/lib/financial-types";
 import { computeKPIs, computeMonthlyData } from "@/lib/financial-utils";
+
+// bundle-dynamic-imports (vercel-react-best-practices): Recharts is the bulk of
+// the initial chunk. next/dynamic has no equivalent here, so the Vite/React
+// route is a code-splitting boundary at the lazy import.
+const IncomeOutcomeChart = lazy(() =>
+  import("@/components/dashboard/income-outcome-chart").then((m) => ({
+    default: m.IncomeOutcomeChart,
+  })),
+);
+const ProfitPercentChart = lazy(() =>
+  import("@/components/dashboard/profit-percent-chart").then((m) => ({
+    default: m.ProfitPercentChart,
+  })),
+);
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "";
 
@@ -71,8 +84,17 @@ function App() {
           <section>
             <h2 className="visually-hidden">Financial charts</h2>
             <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
-              <IncomeOutcomeChart data={monthlyData} loading={loading} />
-              <ProfitPercentChart data={monthlyData} loading={loading} />
+              <Suspense
+                fallback={
+                  <>
+                    <ChartCardSkeleton />
+                    <ChartCardSkeleton />
+                  </>
+                }
+              >
+                <IncomeOutcomeChart data={monthlyData} loading={loading} />
+                <ProfitPercentChart data={monthlyData} loading={loading} />
+              </Suspense>
             </div>
           </section>
         </div>
