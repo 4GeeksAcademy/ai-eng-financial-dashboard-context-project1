@@ -23,20 +23,43 @@
 
 ## Known issues and cautions
 
-- Some frontend period labels are hardcoded in more than one location.
+- The reporting period is derived from the loaded data by
+  `formatReportingPeriod(monthlyData)`; it is no longer hardcoded. Do not
+  reintroduce a literal period string.
+- Frontend month bucketing reads `create_date` by slicing the ISO string. Do not
+  reintroduce `new Date(create_date)` for month or day extraction; it shifts
+  day-1 movements into the previous month on UTC-negative hosts.
 - The Vite development proxy targets `http://backend:8000`.
 - A previous Codespaces request encountered a proxy-related 504 error. Diagnose the environment before changing application code.
 - The Docker configuration is development-oriented; production readiness has not been established.
 - Do not assume previous environment problems are still present without reproducing them.
 
+## Agent skills and current quality baseline
+
+- Loaded community skills live in `.agents/skills/`: `accessibility`,
+  `vercel-react-best-practices`, `core-web-vitals`.
+- The project-authored skill lives in `.skills/adding-financial-metrics/`.
+- Session detail, including what was rejected and why, is in `progress.md`.
+- Frontend build baseline changed: the initial JS chunk is now ~188 kB
+  (59.86 kB gzip) with Recharts split into a lazy chunk, and the
+  `chunk larger than 500 kB` warning is gone. Treat a reintroduced warning as a
+  regression.
+- WCAG contrast across all 11 text and graphic pairs measures above the AA
+  minimum. Contrast is not a known issue here; do not "fix" it without
+  re-measuring.
+- Backend tests were re-run in the Codespace on 2026-10-14
+  (`docker compose exec backend python -m pytest`): 15 passed, 1 warning. Docker
+  is unavailable on the agent's local host, so that run is the current evidence.
+
 ## Instructions for the next agent
 
 1. Read `AGENTS.md` and `.agents/rules/verification-and-debugging.md`.
-2. Read `project-overview.md` and consult `engineering-findings.md` and `verification.md` for supporting evidence.
-3. Inspect the current source before relying on this summary.
-4. Keep changes within the requested scope.
-5. Run relevant tests after code changes and report the actual results.
-6. Request permission before changing host-level configuration.
+2. Read `.agents/skills/` and `.skills/` before applying conventions to the dashboard.
+3. Read `project-overview.md` and consult `engineering-findings.md` and `verification.md` for supporting evidence.
+4. Inspect the current source before relying on this summary.
+5. Keep changes within the requested scope.
+6. Run relevant tests after code changes and report the actual results.
+7. Request permission before changing host-level configuration.
 
 ## Scope
 

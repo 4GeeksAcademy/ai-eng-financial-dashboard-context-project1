@@ -70,7 +70,10 @@ Report actual command results. Do not claim validation passed unless the command
 - Backend routes and mock-data generation are located in `backend/app/routes.py`.
 - The API includes `/api/metrics/b2b` and `/api/metrics/b2c`.
 - Frontend tests include coverage for `financial-utils`.
-- The displayed period label is hardcoded in more than one frontend location.
+- The header's reporting-period label is derived from `computeMonthlyData` output
+  by `formatReportingPeriod` in `frontend/src/lib/financial-utils.ts`. It was
+  hardcoded in two frontend locations until commit `40a2654`; do not reintroduce
+  a literal.
 - The Docker configuration is oriented toward development; review it before assuming it is production-ready.
 
 Supporting evidence: `engineering-findings.md` and `verification.md`.
