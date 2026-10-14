@@ -29,6 +29,42 @@ without duplicating derivation or formatting logic.
 | 4 | `src/components/dashboard/` | Render. KPI cards go through `KPIRow` → `KPICard`; charts are their own module. |
 | 5 | `src/App.tsx` | Wire state only through the existing `metrics` / `monthlyData` pair. |
 
+## When the figure is neither a total nor a series
+
+Some outputs are descriptive rather than numeric — a reporting-period caption, a
+row count, a "last updated" stamp. These do **not** belong in `KPIMetrics` or
+`MonthlyDataPoint`, and adding a third parallel model is usually wrong too.
+
+- Write a pure function that takes the **already-derived** model
+  (`MonthlyDataPoint[]`, not `FinancialMovement[]`) so it cannot disagree with
+  what the charts render. See `formatReportingPeriod`.
+- Test it against `computeMonthlyData` output, not just against hand-built
+  fixtures, so the two cannot drift apart.
+- Derive it during render in `App.tsx` rather than adding `useState` for it.
+- Make the consuming prop required. An optional prop with a literal default is
+  how the period ended up hardcoded twice.
+
+## Dates must be bucketed timezone-free
+
+`create_date` is an ISO calendar date. Never route it through `new Date(string)`
+to read its month or day: the string parses as UTC midnight, so west of
+Greenwich it reads as the previous calendar day and a movement dated the 1st
+lands in the prior month.
+
+```ts
+// ❌ shifts 2024-02-01 to Jan 2024 at UTC-5
+`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`
+
+// ✅
+isoDate.slice(0, 7)
+```
+
+`backend/app/routes.py` draws `movement_day = random.randint(1, 28)`, so the live
+API does emit day-1 dates; the frontend mock data happens not to, which means
+this defect is invisible in the static demo and real against the backend. Any
+month-bucketing test must include a day-1 fixture, which fails on a UTC-negative
+host and passes on a UTC-positive one — pin it with the fixture, not the host.
+
 ## Formatting rules
 
 - Currency: `formatCurrency` from `financial-utils`. Percent: `formatPercent`.
@@ -66,11 +102,11 @@ and its `.visually-hidden` table, and that the numbers match.
 
 ## Known traps in this repo
 
-- The reporting period is hardcoded in **two** places with different dash
-  characters: `App.tsx:62` uses `2024 - Full Year` and `dashboard-header.tsx:7`
-  defaults to `2024 — Full Year`. The prop from `App.tsx` always wins, so the
-  default is dead and misleading. If a task touches the period, collapse it to
-  one source.
+- The reporting period used to be hardcoded twice with different dash characters
+  (`2024 - Full Year` in `App.tsx` versus a `2024 — Full Year` default in
+  `dashboard-header.tsx`). It is now derived once via
+  `formatReportingPeriod(monthlyData)` and `period` is a required prop. Do not
+  reintroduce a literal, and do not make the prop optional again.
 - `ResponsiveContainer` needs a parent with a resolved height. Wrap it in a
   fixed-height element (`h-[280px]`) and give the container `height="100%"`.
 - Both charts are `React.lazy`. A new chart must be added to the `Suspense`

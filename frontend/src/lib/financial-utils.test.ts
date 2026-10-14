@@ -5,6 +5,7 @@ import {
   computeMonthlyData,
   formatCurrency,
   formatPercent,
+  formatReportingPeriod,
 } from "./financial-utils";
 import type { FinancialMovement } from "./financial-types";
 
@@ -101,6 +102,22 @@ describe("computeMonthlyData", () => {
       profitPercent: 100,
     });
   });
+
+  it("buckets a movement dated on the first of a month into that month", () => {
+    const firstOfMonth: FinancialMovement[] = [
+      {
+        create_date: "2024-02-01",
+        amount: 400,
+        operation_type: "income",
+        category: "sales",
+        business_type: "B2B",
+      },
+    ];
+
+    expect(computeMonthlyData(firstOfMonth)).toEqual([
+      { month: "Feb 2024", income: 400, outcome: 0, profitPercent: 100 },
+    ]);
+  });
 });
 
 describe("formatters", () => {
@@ -110,5 +127,35 @@ describe("formatters", () => {
 
   it("formats percent with one decimal", () => {
     expect(formatPercent(15.555)).toBe("15.6%");
+  });
+});
+
+describe("formatReportingPeriod", () => {
+  it("spans the first and last month of the series", () => {
+    expect(
+      formatReportingPeriod([
+        { month: "Jan 2024", income: 10, outcome: 0, profitPercent: 100 },
+        { month: "Feb 2024", income: 10, outcome: 0, profitPercent: 100 },
+        { month: "Dec 2024", income: 10, outcome: 0, profitPercent: 100 },
+      ]),
+    ).toBe("Jan 2024 – Dec 2024");
+  });
+
+  it("returns a single label when the series covers one month", () => {
+    expect(
+      formatReportingPeriod([
+        { month: "Mar 2024", income: 10, outcome: 0, profitPercent: 100 },
+      ]),
+    ).toBe("Mar 2024");
+  });
+
+  it("returns an empty string before any data arrives", () => {
+    expect(formatReportingPeriod([])).toBe("");
+  });
+
+  it("agrees with the labels the charts render", () => {
+    const monthlyData = computeMonthlyData(sampleMovements);
+
+    expect(formatReportingPeriod(monthlyData)).toBe("Jan 2024 – Feb 2024");
   });
 });

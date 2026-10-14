@@ -23,7 +23,12 @@
 
 ## Known issues and cautions
 
-- Some frontend period labels are hardcoded in more than one location.
+- The reporting period is derived from the loaded data by
+  `formatReportingPeriod(monthlyData)`; it is no longer hardcoded. Do not
+  reintroduce a literal period string.
+- Frontend month bucketing reads `create_date` by slicing the ISO string. Do not
+  reintroduce `new Date(create_date)` for month or day extraction; it shifts
+  day-1 movements into the previous month on UTC-negative hosts.
 - The Vite development proxy targets `http://backend:8000`.
 - A previous Codespaces request encountered a proxy-related 504 error. Diagnose the environment before changing application code.
 - The Docker configuration is development-oriented; production readiness has not been established.

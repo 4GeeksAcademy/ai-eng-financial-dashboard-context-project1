@@ -157,6 +157,39 @@ the default is dead and misleading. Not fixed: out of scope for a skills task.
   `height: 280` correctly. No screenshots were captured, so visual confirmation
   is outstanding; all verification above is DOM- and measurement-based.
 
+### Using the project skill on a real task
+
+The skill was exercised on the one trap it names but does not own: the doubled
+hardcoded period. Following its own pipeline (derive purely → test before
+rendering → wire in `App.tsx`) surfaced three things.
+
+1. **The skill was incomplete.** Its pipeline only accepts a *total* or a
+   *series*. A reporting-period caption is neither, and the skill had nowhere to
+   put it. Added two sections: outputs that are neither total nor series, and a
+   timezone rule.
+2. **A latent defect in `financial-utils.ts` fell out of the new tests.**
+   `toYearMonthKey` did `new Date(m.create_date)` and then read `getMonth()`.
+   An ISO date string parses as UTC midnight, so on this host (`America/Bogota`,
+   UTC-5) `2024-02-01` reads as 2024-01-31 and the movement is bucketed into
+   January. Fixed by slicing the ISO string (`isoDate.slice(0, 7)`), which is
+   timezone-free.
+3. **Scope of that defect, stated precisely.** `frontend/src/lib/mock-data.ts`
+   contains no day-1 dates, so the static demo shows identical numbers before
+   and after — the fix changes nothing visible there. But
+   `backend/app/routes.py:74` draws `movement_day = random.randint(1, 28)`, so
+   the live API does emit day-1 dates. The bug is real against the backend and
+   invisible in the mock. Reported that way rather than as a visible win.
+
+Tests went 5 → 10: four for `formatReportingPeriod` (span, single month, empty,
+and one asserting agreement with `computeMonthlyData` output so the caption
+cannot drift from the chart axis) plus a day-1 regression case.
+`DashboardHeader.period` became a required prop; both literals deleted.
+
+Verified in the rendered DOM: header badge reads `Jan 2024 – Dec 2024`, all
+twelve months present, KPIs unchanged (`$1,074,100` / `$492,200` / `$581,900` /
+54.2%), heading hierarchy still `h1 > h2 > h2 > h3 > h3`. Lint clean, build
+clean at 187.83 kB initial.
+
 ### Commits
 
 | Commit | Skill traced |
@@ -165,3 +198,4 @@ the default is dead and misleading. Not fixed: out of scope for a skills task.
 | `perf(frontend): apply vercel-react-best-practices to the Vite build` | `vercel-react-best-practices` |
 | `perf(cwv): apply core-web-vitals skill and measure CLS` | `core-web-vitals` |
 | `feat(skills): add project skill ...` + this log | project-authored |
+| `fix(frontend): derive reporting period and fix UTC month bucketing` | project skill, exercised |

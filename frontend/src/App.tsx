@@ -7,7 +7,11 @@ import {
   type KPIMetrics,
   type MonthlyDataPoint,
 } from "@/lib/financial-types";
-import { computeKPIs, computeMonthlyData } from "@/lib/financial-utils";
+import {
+  computeKPIs,
+  computeMonthlyData,
+  formatReportingPeriod,
+} from "@/lib/financial-utils";
 
 // bundle-dynamic-imports (vercel-react-best-practices): Recharts is the bulk of
 // the initial chunk. next/dynamic has no equivalent here, so the Vite/React
@@ -59,7 +63,7 @@ function App() {
     <main className="dark min-h-screen bg-background text-foreground">
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <div className="flex flex-col gap-8">
-          <DashboardHeader period="2024 - Full Year" />
+          <DashboardHeader period={formatReportingPeriod(monthlyData)} />
 
           {error ? (
             <div
