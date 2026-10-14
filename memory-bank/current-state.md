@@ -47,8 +47,9 @@
 - WCAG contrast across all 11 text and graphic pairs measures above the AA
   minimum. Contrast is not a known issue here; do not "fix" it without
   re-measuring.
-- Backend tests were not re-run this session because Docker is unavailable on
-  the local host. The 15-passed figure above still stands as unverified locally.
+- Backend tests were re-run in the Codespace on 2026-10-14
+  (`docker compose exec backend python -m pytest`): 15 passed, 1 warning. Docker
+  is unavailable on the agent's local host, so that run is the current evidence.
 
 ## Instructions for the next agent
 

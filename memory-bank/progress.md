@@ -143,10 +143,22 @@ the default is dead and misleading. Not fixed: out of scope for a skills task.
 
 ### Environment findings
 
-- Docker is unavailable on this host, so `docker compose run --rm backend python -m
-  pytest -q` from `.agents/rules` §2 could not be run. Backend tests are
-  therefore **not** re-verified this session; the recorded 15-passed result in
-  `current-state.md` predates these changes, which touch no backend file.
+- Docker is unavailable on this host, so the backend suite could not be run here.
+  It was run in the student's Codespace on 2026-10-14 with `docker compose exec
+  backend python -m pytest` after `docker compose up --build`: **15 passed, 1
+  warning in 0.45s**, `rootdir: /app` (so against the container's own copy of the
+  repo). This session's commits touch no backend file, and the result matches the
+  15-passed figure previously recorded in `current-state.md`, which that file now
+  reports as re-verified.
+- The single pytest warning is `StarletteDeprecationWarning` from
+  `fastapi/testclient.py`, raised inside `site-packages`, not in project code. It
+  predates this session and is not a defect introduced here.
+- `frontend/.dockerignore` is absent, so the frontend build context transfers the
+  host `node_modules` (observed as `transferring context: 214.87MB`). It is
+  harmless at runtime because Compose bind-mounts `./frontend:/app`, but it makes
+  every rebuild pay for copying 215 MB the image does not need. **Not fixed**: a
+  new ignore file is outside this lesson's scope and would land in the PR with no
+  skill justifying it. Recorded as an observation.
 - The Vite proxy targets `http://backend:8000`, a Docker-only hostname. Frontend
   verification used a scratch stub server outside the repo serving
   `frontend/dist` plus `/api/metrics` built from the repo's own `mock-data.ts`
