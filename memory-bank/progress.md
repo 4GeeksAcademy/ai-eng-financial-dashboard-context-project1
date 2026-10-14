@@ -156,6 +156,15 @@ the default is dead and misleading. Not fixed: out of scope for a skills task.
   was an environment artifact, not a defect: the wrapper div measured
   `height: 280` correctly. No screenshots were captured, so visual confirmation
   is outstanding; all verification above is DOM- and measurement-based.
+- Running the suite in the Codespace reported **13 vulnerabilities (1 low, 5
+  moderate, 7 high)** across the 266 installed packages, with npm suggesting
+  `npm audit fix`. Deliberately **not** run: this session's commits touch neither
+  `frontend/package.json` nor `frontend/package-lock.json`, so the advisories are
+  pre-existing, while `npm audit fix` rewrites the lockfile and bumps transitive
+  versions. `.agents/rules` §4 bars dependency changes the task did not ask for,
+  and an unrequested upgrade would make any later build failure impossible to
+  attribute. The advisories are recorded here as an observation and were not
+  triaged individually.
 
 ### Using the project skill on a real task
 
